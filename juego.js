@@ -9,50 +9,63 @@ function eleccionHumano() {
     return usuario;
 }
 
+let marcadorHumano = 0;
+let marcadorMaquina = 0;
+
+let marcador = document.createElement('div');
+marcador.style.marginTop = '20px';
+document.body.appendChild(marcador);
+
+function actualizarMarcador(mensaje = "") {
+    marcador.innerHTML = `
+        <p>${mensaje}</p>
+        <p>Marcador: Humano ${marcadorHumano} - Maquina ${marcadorMaquina}</p>
+    `;
+}
+
 function playRound(eleccionHumano, eleccionMaquina) {
     eleccionHumano = eleccionHumano.toLowerCase();
     eleccionMaquina = eleccionMaquina.toLowerCase();
     
-    if (eleccionHumano === eleccionMaquina) {
-        console.log("Empate. Ambos eligieron " + eleccionHumano);
+    if (marcadorHumano >= 5 || marcadorMaquina >= 5) {
         return;
     }
-    if (
+
+    let mensaje = "";
+
+    if (eleccionHumano === eleccionMaquina) {
+       mensaje = "Empate. Ambos eligieron " + eleccionHumano;
+       actualizarMarcador(mensaje);
+        return;
+    } else if (
         (eleccionHumano === "piedra" && eleccionMaquina === "tijeras") ||
         (eleccionHumano === "papel" && eleccionMaquina === "piedra") ||
         (eleccionHumano === "tijeras" && eleccionMaquina === "papel")
     ) {
         marcadorHumano++;
-        console.log("Ganaste! " + eleccionHumano + " le gana a " + eleccionMaquina);
+        mensaje = "Ganaste! " + eleccionHumano + " le gana a " + eleccionMaquina;
     } else {
         marcadorMaquina++;
-        console.log("Perdiste! " + eleccionMaquina + " le gana a " + eleccionHumano);
+        mensaje = "Perdiste! " + eleccionMaquina + " le gana a " + eleccionHumano;
     }
+
+    if (marcadorHumano === 5) {
+        mensaje += "<br><strong>Felicidades! Ganaste el juego.</strong>"
+    } else if (marcadorMaquina === 5) {
+        mensaje += "<br><strong>La maquina gano el juego.</strong>"
+    }
+
+actualizarMarcador(mensaje);
 }
 
-let marcadorHumano = 0;
-let marcadorMaquina = 0;
+let opciones = ["piedra", "papel", "tijeras"];
 
-function playGame (){
-   marcadorHumano = 0;
-   marcadorMaquina = 0;
-
-    for (let i = 1; i <= 5; i++) {
-        console.log(`Ronda ${i}`);
-        const humanSelection = eleccionHumano();
-        const computerSelection = eleccionMaquina();
-        playRound(humanSelection, computerSelection);
-        console.log(`Marcador Humano ${marcadorHumano} | Marcador pc ${marcadorMaquina}`);
-    }
-
-    console.log(`Resultado final \n Humano ${marcadorHumano} \n Maquina ${marcadorMaquina}`);
-    if (marcadorHumano > marcadorMaquina) {
-        console.log("Felicidades! Ganaste el juego.");
-    } else if (marcadorMaquina > marcadorHumano) {
-        console.log("La maquina gano el juego. Suerte para la proxima.")
-    } else {
-        console.log("Empate!");
-    }
-}
-
-playGame();
+opciones.forEach(opcion => {
+    let boton = document.createElement('button');
+    boton.textContent = opcion.charAt(0).toUpperCase() + opcion.slice(1);
+    boton.addEventListener('click', function() {
+        let eleccionMaq = eleccionMaquina();
+        playRound(opcion, eleccionMaq);
+    });
+    document.body.appendChild(boton);
+})
